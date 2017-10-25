@@ -9,8 +9,6 @@ import json
 import pandas as pd
 import sqlite3 as sqlite
 
-import matplotlib
-
 class MarketDataException(Exception):
     pass
 
