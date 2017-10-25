@@ -11,14 +11,17 @@ Some Plugins for Crypto Coin Lending Bot aka Poloniex Lending Bot
 
 
 ## Configure ##
+
 Add AnalysisCharts to plugins:
+```
 plugins = AccountStats,Charts,**AnalysisCharts**
+```
 
 Change MarketAnalysis keep_history_seconds to maximum of 1209600s:
-
+```
 [MarketAnalysis]
 keep_history_seconds = 1209600
-
+```
 
 ## Testing ##
 Go to your bot webpage e.g. ```127.0.0.1:7777/analysischarts.html```
