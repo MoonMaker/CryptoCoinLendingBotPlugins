@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+
+    <title>Lending Bot - Analysis Charts</title>
+
+	<style>
+	body {
+	  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	}
+	.box {
+	  font: 10px sans-serif;
+	}
+	
+	.box line,
+	.box rect,
+	.box circle {
+	  fill: #fff;
+	  stroke: #000;
+	  stroke-width: 1.5px;
+	}
+	
+	.box .center {
+	  stroke-dasharray: 3,3;
+	}
+	
+	.box .outlier {
+	  fill: none;
+	  stroke: #ccc;
+	}
+	</style>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- jQuery Version 1.12.2 -->
+    <script src="https://code.jquery.com/jquery-1.12.2.min.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+	<!--  Plot -->
+	<script src="analysischarts/plotly-latest.min.js"></script>
+	<script>
+
+	// Update graphs
+	var interval = setInterval(function() {
+	
+		Plotly.d3.json("analysischarts/fundingbook.json", function(error, figure){
+			
+			if (error) return console.warn(error);
+
+			// Check several currencies
+		    for (var i = 0, len = figure.conditions.length; i < len; i++) {
+		    
+		    	// Scatter Plot
+		    	///////////////////////////////////////////////////////////////////////////////////////////
+				var trace = {
+					name: '<b>Matched '+ figure.conditions[i] +'</b>',
+					type: 'scatter',                    // set the chart type
+					mode: 'lines',                      // connect points with lines					
+					x: figure[figure.conditions[i]].x, 
+					y: figure[figure.conditions[i]].y,
+				    line: {                             // set the width of the line.
+				        width: 1
+				    },
+					error_y: {
+						array: (figure[figure.conditions[i]].z/10),	// set the height of the error bars
+						thickness: 0.5,                 		// set the thickness of the error bars
+						width: 0
+					}					
+				};
+				
+			    var layout = {
+					showlegend: true,
+			    	title: figure.conditions[i] + " Funding",
+					yaxis: {title: "Rate"},       // set the y axis title
+					xaxis: {
+						tickformat: "%Y-%m-%d %H:%M",              // customize the date format to "month, day"
+						tickangle: -45,
+						tickmode: "array" 
+					}
+			    };
+		    
+				// Box Plot
+				///////////////////////////////////////////////////////////////////////////////////////////
+				var tracebox1 = {
+						y: figure[figure.conditions[i]].y,
+						type: 'box',
+						name: 'All Points',
+						jitter: 0.3,
+						pointpos: -1.8,
+						marker: {
+							color: 'rgb(7,40,89)'
+						},
+						boxpoints: 'all'
+				};
+
+				var layoutbox = {
+				  title: 'Box Plot Styling Outliers'
+				};
+			    
+
+				// Create Plot
+				// Plot already exists?
+				/////////////////////////////////////////////////////////////////////////////////////////////
+			    if ( $('#margin_funding'+'_'+figure.conditions[i]).length){
+
+			    	//console.log({x: trace.x, y: trace.y});
+					//Plotly.extendTraces(document.getElementById('margin_funding'+'_'+figure.conditions[i]), {x: trace.x, y: trace.y});
+					document.getElementById('margin_funding'+'_'+figure.conditions[i]).data[0].x = trace.x;
+					document.getElementById('margin_funding'+'_'+figure.conditions[i]).data[0].y = trace.y;
+
+					//console.log(document.getElementById('margin_funding'+'_'+figure.conditions[i]).data[0]);
+			    	Plotly.redraw(document.getElementById('margin_funding'+'_'+figure.conditions[i]));
+
+			    } else {	    
+			    
+			    	// Create Graph
+			    	$('<div id="margin_funding'+'_'+figure.conditions[i] + '"></div>').appendTo('#margin_funding');
+			    	Plotly.plot(document.getElementById('margin_funding'+'_'+figure.conditions[i]), [trace], layout, {showLink: false});
+
+			    	// Create Boxplot
+			    	$('<div id="margin_funding_box_'+'_'+figure.conditions[i] + '"></div>').appendTo('#margin_funding');
+			    	Plotly.plot(document.getElementById('margin_funding_box_'+'_'+figure.conditions[i]), [tracebox1], layoutbox, {showLink: false});
+			  
+			    }
+
+		    }
+
+		})
+
+
+	}, 1000);
+		
+	</script>
+
+
+</head>
+<body>
+
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header" style="margin-left:8px">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a href="lendingbot.html"><img src="images/icon192.png" height="32" width="32" style="margin-top: 8px;margin-right: 8px;margin-left: -15px;vertical-align:top"></a>
+                <div style="display:inline-block">
+                    <h4 class="brand-margin" id="title">Lending Bot - Analysis Charts</h4>
+                </div>
+            </div>
+            <ul class="nav navbar-nav navbar-right" id="navbar-menu">
+                <li id="charts-navbar" data-toggle="collapse" data-target=".navbar-collapse.in"><a href="/lendingbot.html">Dashboard</a></li>
+            </ul>
+
+        </div>
+    </nav>
+
+    <div class="container" style="padding-top:50px" id="chart-container">
+      <div class="row" id="chart-boxplot"></div>
+      <div class="row">
+        <div id="margin_funding" class="col-md-12">
+          <p class="text-center small">AnalysisChart</p>
+        </div>
+      </div>
+    </div>
+
+</body>
+</html>
