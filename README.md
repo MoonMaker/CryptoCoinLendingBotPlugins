@@ -5,19 +5,19 @@ Some Plugins for Crypto Coin Lending Bot aka Poloniex Lending Bot
 ## Install ##
 
 - git submodule add -f https://github.com/MoonMaker/CryptoCoinLendingBotPlugins.git plugins/analysecharts
-- git submodule foreach git pull
+- git submodule foreach git pullcd 
 - chmod +x plugins/analysecharts/*.sh
 - plugins/analysecharts/install.sh
 
 
 ## Configure ##
 
-Add AnalysisCharts to plugins:
+- Add AnalysisCharts to plugins:
 ```
 plugins = AccountStats,Charts,**AnalysisCharts**
 ```
 
-Change MarketAnalysis keep_history_seconds to maximum of 1209600s:
+- Change MarketAnalysis keep_history_seconds to maximum of 1209600s:
 ```
 [MarketAnalysis]
 keep_history_seconds = 1209600
